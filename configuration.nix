@@ -21,10 +21,10 @@ users.users.sara =
 	packages = with pkgs; 
 		[
 		# Basic Apps
-		unstable.brave
-		unstable.libreoffice-fresh
+		brave
+		libreoffice-fresh
 		mpv
-		unstable.stremio
+		stremio
 		signal-desktop
 		speedcrunch
 		telegram-desktop
