@@ -12,13 +12,13 @@ imports =
 	./hardware-configuration.nix
 	];
 
-users.users.sara = 
+users.users.sara =
 	{
 	isNormalUser = true;
 	description = "Sára";
     extraGroups = [ "networkmanager" "wheel" "i2c" ];
 # List packages installed in user profile
-	packages = with pkgs; 
+	packages = with pkgs;
 		[
 		# Basic Apps
 		brave
@@ -35,6 +35,10 @@ users.users.sara =
 		errands
 		unstable.obsidian
 		unstable.vscode
+		gimp3-with-plugins
+		zed-editor
+		# Games	and it's dependences
+		prismlauncher
 		# Tweaks
 		aria2
 		menulibre
@@ -52,19 +56,42 @@ users.users.sara =
 		gnomeExtensions.simple-timer
 		gnomeExtensions.gtile
 		gnomeExtensions.top-bar-organizer
+		gnomeExtensions.blur-my-shell
+		# Theme
+		papirus-folders
+		papirus-icon-theme
 		];
 	};
+
+# Steam,
+programs.steam =
+	{
+	enable = true;
+	remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+	dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+	};
+
+programs.steam.extraCompatPackages = with pkgs;
+	[
+	proton-ge-bin
+	];
+
+# Optional: If you encounter amdgpu issues with newer kernels (e.g., 6.10+ reported issues),
+# you might consider using the LTS kernel or a known stable version.
+# boot.kernelPackages = pkgs.linuxPackages_lts; # Example for LTS
 
 #LibreOffice
 environment.sessionVariables = { SAL_USE_VCLPLUGIN = "gtk3"; };
 
 # List packages installed in system profile
-environment.systemPackages = with pkgs; 
+environment.systemPackages = with pkgs;
 	[
 	# Tweaks
 	gnome-tweaks
 	gnome-disk-utility
 	ddcutil
+	dconf
+	dconf-editor
 	#nh
 	# Terminal
 	fastfetch
@@ -83,14 +110,14 @@ environment.systemPackages = with pkgs;
 	];
 
 # Remove Gnome apps
-environment.gnome.excludePackages = with pkgs; 
+environment.gnome.excludePackages = with pkgs;
 	[
 	atomix			# puzzle game
 	#baobab			# disk usage analyzer
 	cheese			# take photos
 	#eog			# image viewer
 	epiphany		# web browser
-	evince			# document viewer 
+	evince			# document viewer
 	#file-roller	# archive manager
 	geary			# email client
 	#gedit       	# text editor
@@ -109,7 +136,7 @@ environment.gnome.excludePackages = with pkgs;
 	#gnome-system-monitor
 	gnome-tour
 	#gnome-weather
-	#seahorse    	# password manager 
+	#seahorse    	# password manager
 	simple-scan 	# document scanner
 	snapshot		# camera
 	#totem 			# video player
@@ -117,18 +144,22 @@ environment.gnome.excludePackages = with pkgs;
 	];
 
 
+# gamescoop
+programs.gamescope.enable = true;
+programs.steam.gamescopeSession.enable = true;
+
 # Allow unfree packages
 nixpkgs.config.allowUnfree = true;
 
 # Flatpak
-# services.flatpak.enable = true;
+services.flatpak.enable = true;
 
 # Remove NixOS Manual
 documentation.nixos.enable = false;
 
 # Pro spouštění binárky
 programs.nix-ld.enable = true;
-programs.nix-ld.libraries = with pkgs; 
+programs.nix-ld.libraries = with pkgs;
 	[
 	# Add any missing dynamic libraries for unpackaged programs
 	# here, NOT in environment.systemPackages
@@ -151,11 +182,13 @@ services.udisks2.enable = true;
 boot.supportedFilesystems = [ "ntfs" ];
 
 fileSystems."/mnt/HDD" =
-	{ 
+	{
 	device = "/dev/disk/by-uuid/A8AE01CAAE01924C";
 	fsType = "ntfs-3g";
 	options = [ "rw" ];
 	};
+# Flakes
+nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
 
 # ----
@@ -185,7 +218,7 @@ time.timeZone = "Europe/Prague";
 # Select internationalisation properties.
 i18n.defaultLocale = "en_US.UTF-8";
 
-i18n.extraLocaleSettings = 
+i18n.extraLocaleSettings =
 	{
 	LC_ADDRESS = "cs_CZ.UTF-8";
 	LC_IDENTIFICATION = "cs_CZ.UTF-8";
@@ -206,7 +239,7 @@ services.xserver.displayManager.gdm.enable = true;
 services.xserver.desktopManager.gnome.enable = true;
 
 # Configure keymap in X11
-services.xserver.xkb = 
+services.xserver.xkb =
 	{
 	layout = "cz";
 	variant = "qwerty_bksl";
@@ -221,7 +254,7 @@ services.printing.enable = true;
 # Enable sound with pipewire.
 services.pulseaudio.enable = false;
 security.rtkit.enable = true;
-services.pipewire = 
+services.pipewire =
 	{
 	enable = true;
 	alsa.enable = true;
@@ -247,7 +280,7 @@ services.pipewire =
 # Some programs need SUID wrappers, can be configured further or are
 # started in user sessions.
 # programs.mtr.enable = true;
-# programs.gnupg.agent = 
+# programs.gnupg.agent =
 #	{
 #   enable = true;
 #   enableSSHSupport = true;
@@ -274,4 +307,3 @@ services.pipewire =
 system.stateVersion = "25.05"; # Did you read the comment?
 
 }
-
